@@ -158,7 +158,7 @@ export default function DailyReadings(props)
                 return Alert.alert('Error','Internet Network Not Found. Kindly Connect To A Network.')
             }
         })
-        await HymnService.getHymn(`https://www.ewtn.com/se/readings/readingsservice.svc/day/${_date}/en`)
+        await HymnService.getHymn();
         .then(
             response=>response.json()
             
@@ -189,7 +189,7 @@ export default function DailyReadings(props)
                 _response.gospel_reading]
 
                 
-             await HymnService.getBooks(`https://www.ewtn.com/se/readings/readingsservice.svc/books`,refrences)
+             await HymnService.getBooks();
             .then(
                 response=>response.json()
                 

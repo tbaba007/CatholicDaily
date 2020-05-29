@@ -19,10 +19,17 @@ function DashBoard(props) {
       let mounted=true;
       let readingListCount=0;
         Storage.getAllMessages().then(success=>{
-            if(mounted)
-            setReadingCount(success.length)
-        })
+            success.map(item=>{
+                // let key=JSON.parse(item).date
+                if(item!=='registered' && !item.includes('HomilyDate'))
+                  {
+                    readingListCount=readingListCount+1;
+                 }
+            })
 
+        setReadingCount(readingListCount)
+            
+        })
         return ()=>mounted=false;
     }
 
@@ -53,7 +60,7 @@ const dashBoardList=[
     {
         id:'1',
         name:'Hymns',
-        count:367,
+        count:355,
         backgroundColor:'green',
         color:'white',
         icon:'book',
