@@ -38,6 +38,7 @@ export default function DownloadReadings(props)
     const [loading,setLoading]=useState(false);
     const [startDate,setStartDate]=useState('');
     const [endDate,setEndDate]=useState('');
+    const [error,setError]=useState('');
     let readingBodyArr=[];
     const [date,setDate]=useState(new Date())
     YellowBox.ignoreWarnings(['componentWillReceiveProps']);
@@ -55,47 +56,86 @@ export default function DownloadReadings(props)
 
         return true;
     }
+
+    const isConnected=async()=>{
+        let connected=false;
+        await NetworkHekper.isConnected()
+        .then(success=>{
+            console.log(success)
+            if(!success.isConnected)
+            {
+              connected=false;
+            }
+            else
+            if(!success.isInternetReachable)
+            {
+                connected=false;
+            }else{
+                connected=true;
+            }
+        })
+        return connected;
+    }
  
     const handleDataPull=(startDate, endDate)=>
     {
-        if(startDate>endDate)
-        {
-            Alert.alert('Error','StartDate Cannot Be Greater Than EndDate');
-            return;
-        }
-            var dates = [],
-                currentDate = startDate,
-                addDays = function(days) {
-                  var date = new Date(this.valueOf());
-                  date.setDate(date.getDate() + days);
-                  return date;
-                };
-            while (currentDate <= endDate) {
-               dates.push(formatDate(currentDate));
-              currentDate = addDays.call(currentDate, 1);
-            }
+        setError('');
+         Promise.resolve(isConnected()).then(err=>{
            
-            if(dates.length>29)
-            {
-                Alert.alert('Error','Please Select Maximum 30days');
+             if(!err)
+             {
+                setError('err');
+                Alert.alert('Error','Internet Network Not Detectedd');
                 return;
-            }
-
-            for(var i=0;i<dates.length;i++)
-            {
-                setLoading(true);
-                
-                fetchReadingHeader(dates[i])
+             }
+             else
+             {
+                if(startDate>endDate)
+                {
+                    Alert.alert('Error','StartDate Cannot Be Greater Than EndDate');
+                    return;
+                }
+                    var dates = [],
+                        currentDate = startDate,
+                        addDays = function(days) {
+                          var date = new Date(this.valueOf());
+                          date.setDate(date.getDate() + days);
+                          return date;
+                        };
+                    while (currentDate <= endDate) {
+                       dates.push(formatDate(currentDate));
+                      currentDate = addDays.call(currentDate, 1);
+                    }
                    
-                
-                
-            }
+                    if(dates.length>29)
+                    {
+                        Alert.alert('Error','Please Select Maximum 30days');
+                        return;
+                    }
+        
+                    for(var i=0;i<dates.length;i++)
+                    {
+                        setLoading(true);
+                        
+                        fetchReadingHeader(dates[i])
+                           
+                        
+                        
+                    }
+        
+                    setTimeout(()=>{
+                        setLoading(false)
+                        console.log(error);
+                        if(error==='')
+                        {
+                            Alert.alert('Success','Mass Readings Downloaded Successfully');
 
-            setTimeout(()=>{
-                setLoading(false)
-                Alert.alert('Success','Mass Readings Downloaded Successfully');
-            },10000)
-            return dates;
+                        }
+                    },10000)
+                    return dates;
+             }
+         })
+    
     }
 
     const formatDate=(date)=> {
@@ -200,21 +240,10 @@ export default function DownloadReadings(props)
     }
 
     const fetchReadingHeader=async(_date)=>{
-      //  console.log(_date)
-        NetworkHekper.isConnected()
-        .then(success=>{
-            console.log(success)
-            if(!success.isConnected)
-            {
-                return Alert.alert('Error','Internet Network Not Found. Kindly Connect To A Network.')
-            }
-            else
-            if(!success.isInternetReachable)
-            {
-                return Alert.alert('Error','Internet Network Not Found. Kindly Connect To A Network.')
-            }
-        })
-        await HymnService.getHymn(``)
+
+      
+        
+    await HymnService.getHymn(`https://www.ewtn.com/se/readings/readingsservice.svc/day/${_date}/en`)
         .then(
             response=>response.json()
             
@@ -241,7 +270,7 @@ export default function DownloadReadings(props)
                 _response.gospel_reading]
 
                 
-             await HymnService.getBooks()
+             await HymnService.getBooks(`https://www.ewtn.com/se/readings/readingsservice.svc/books`,refrences)
             .then(
                 response=>response.json()
                 
@@ -285,7 +314,7 @@ export default function DownloadReadings(props)
     return(
         <SafeAreaView>
      <Text style={{textAlign:'center',marginTop:30}}>Download Daily Readings Offline</Text>       
-    <View style={{flexDirection:'row'}}>
+    <View style={{flexDirection:'row',alignSelf:'center'}}>
         <Text style={style.Text}>From:</Text>
     <DatePicker
     style={style.DatePicker}
@@ -366,7 +395,7 @@ const style=StyleSheet.create({
     },
     Text:{
         marginTop:30,
-        marginLeft:20,
+        marginLeft:5,
     },
    DownloadButton:{
        backgroundColor:'green',

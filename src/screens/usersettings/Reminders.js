@@ -165,7 +165,7 @@ const times =(response,id)=>{
                     </Text>
                 </TouchableHighlight>
 
-              <Text style={style.Text}>{item.times}</Text>
+              {/* <Text style={style.Text}>{item.times}</Text> */}
                 
                 <Switch 
                 style={style.Switch}

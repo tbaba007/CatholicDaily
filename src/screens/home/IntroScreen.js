@@ -1,5 +1,6 @@
 import React, { useState,useEffect } from 'react';
 import {TextInput,SafeAreaView,StyleSheet,TouchableHighlight,View,Text,ToastAndroid} from 'react-native';
+import { ScrollView } from 'react-native-gesture-handler';
 const Storage=require('../../helper/Storage').saveMessage;
 function IntroScreen(props) {
         const [name,setName]=useState('');
@@ -18,6 +19,7 @@ function IntroScreen(props) {
 
     return (
         <SafeAreaView>
+            <ScrollView>
             <TextInput 
             maxLength={10}
             placeholder="Enter your name"
@@ -51,6 +53,7 @@ function IntroScreen(props) {
                 </Text>
             </TouchableHighlight>
             </View>
+            </ScrollView>
         </SafeAreaView>
     )
 }
@@ -62,7 +65,7 @@ const style=StyleSheet.create({
         textAlign:"center",
         borderBottomColor:'black',
         borderBottomWidth:1,
-        marginTop:300
+        marginTop:200
     },
     ButtonSkip:{
         backgroundColor:'orange',

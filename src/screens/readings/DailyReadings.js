@@ -158,7 +158,7 @@ export default function DailyReadings(props)
                 return Alert.alert('Error','Internet Network Not Found. Kindly Connect To A Network.')
             }
         })
-        await HymnService.getHymn();
+        await HymnService.getHymn(`https://www.ewtn.com/se/readings/readingsservice.svc/day/${_date}/en`)
         .then(
             response=>response.json()
             
@@ -189,7 +189,7 @@ export default function DailyReadings(props)
                 _response.gospel_reading]
 
                 
-             await HymnService.getBooks('');
+             await HymnService.getBooks(`https://www.ewtn.com/se/readings/readingsservice.svc/books`,refrences)
             .then(
                 response=>response.json()
                 
@@ -205,7 +205,7 @@ export default function DailyReadings(props)
 
     return(
         <SafeAreaView>
-    <View style={{flexDirection:'row'}}>
+    <View style={{flexDirection:'row',alignSelf:'center'}}>
     <DatePicker
     style={style.DatePicker}
     date={date}
@@ -238,6 +238,7 @@ export default function DailyReadings(props)
 
            {loaded && readingBodyArr.length>0?
            (
+               <ScrollView>
            <View>
              
                 <Text style={style.Header}>Title:{readingBodyArr[0].Title}</Text>
@@ -273,7 +274,8 @@ export default function DailyReadings(props)
 
                 <Text style={style.Footer}>{readingBodyArr[0].Gospel!==''?'The gospel of the Lord...praise be to you Lord Jesus Christ!':''}</Text>
                 </ScrollView>
-           </View>):!loaded?(
+           </View>
+           </ScrollView>):!loaded?(
                              <ActivityIndicator
                             size="large"
                             style={{marginTop:100}}/>
