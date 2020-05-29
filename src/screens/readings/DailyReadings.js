@@ -189,7 +189,7 @@ export default function DailyReadings(props)
                 _response.gospel_reading]
 
                 
-             await HymnService.getBooks();
+             await HymnService.getBooks('');
             .then(
                 response=>response.json()
                 
