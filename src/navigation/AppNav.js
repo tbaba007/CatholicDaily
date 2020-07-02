@@ -214,7 +214,7 @@ const reset=(menu)=>{
        return <HomeStack.Navigator>
            <HomeStack.Screen name="Home" component={DashBoard} options={{
                title:'Welcome',headerLeft:headerLeft
-           }}/>
+           }} />
        </HomeStack.Navigator>
         
     }

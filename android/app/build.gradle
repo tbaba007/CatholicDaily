@@ -129,7 +129,7 @@ android {
     }
 
     defaultConfig {
-        applicationId "com.catholicdaily"
+        applicationId "com.catholicsdaily"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 2

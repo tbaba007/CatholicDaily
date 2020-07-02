@@ -63,17 +63,10 @@ const App: () => React$Node = () => {
       loading?
       (
         <SplashScreen/>
-
       )
       :
-      registered?
       (
-        // <AppNav user={user}/>
         <Drawer user={user}/>
-      )
-      :
-      (
-        <IntroScreen skip={skip}/>
       )
       }
     </>

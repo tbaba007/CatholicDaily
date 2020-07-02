@@ -106,8 +106,8 @@ export default function DownloadReadings(props)
                        dates.push(formatDate(currentDate));
                       currentDate = addDays.call(currentDate, 1);
                     }
-                   
-                    if(dates.length>29)
+                  // console.log(dates.length)
+                    if(dates.length>30)
                     {
                         Alert.alert('Error','Please Select Maximum 30days');
                         return;
@@ -125,7 +125,6 @@ export default function DownloadReadings(props)
         
                     setTimeout(()=>{
                         setLoading(false)
-                        console.log(error);
                         if(error==='')
                         {
                             Alert.alert('Success','Mass Readings Downloaded Successfully');

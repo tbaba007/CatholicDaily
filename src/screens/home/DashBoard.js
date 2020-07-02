@@ -1,13 +1,14 @@
 import React,{useState,useEffect, useMemo} from 'react'
-import {View,Text,SafeAreaView,StyleSheet,FlatList} from 'react-native';
+import {View,Text,SafeAreaView,Alert,StyleSheet,ScrollView,BackHandler} from 'react-native';
 import { SliderBox } from "react-native-image-slider-box";
-import {Divider,Icon} from 'react-native-elements';
+import {Card,Image,ListItem} from 'react-native-elements';
 const Storage=require('../../helper/Storage');
 function DashBoard(props) {
-    const [user,setUser]=useState(null);
+    const [user,setUser]=useState('');
     const [quoteToShow,setQuoteToShow]=useState('');
     const [registered,setRegistered]=useState(false);
     const [readingCount,setReadingCount]=useState(0);
+    const day= new Date().getDay();
     let Images=[
         require('../../assets/images/slider/slider1.png'),
         require('../../assets/images/slider/slider2.png'),
@@ -20,7 +21,6 @@ function DashBoard(props) {
       let readingListCount=0;
         Storage.getAllMessages().then(success=>{
             success.map(item=>{
-                // let key=JSON.parse(item).date
                 if(item!=='registered' && !item.includes('HomilyDate'))
                   {
                     readingListCount=readingListCount+1;
@@ -28,12 +28,13 @@ function DashBoard(props) {
             })
 
         setReadingCount(readingListCount)
-            
         })
         return ()=>mounted=false;
     }
 
     useEffect(()=>{
+        //backAction()
+
         let mounted=true;
        const fetchUser= Storage.getMessageById('registered')
         .then(success=>{
@@ -55,46 +56,87 @@ function DashBoard(props) {
             mounted=false;
         }
     },[])
+
+
+    const backAction=()=>{
+        console.log(props.route.name)
+        if(props.route.name==='Home')
+        {
+            BackHandler.addEventListener('hardwareBackPress',()=>{
+                Alert.alert("Hold on!", "Are you sure you want to exit?", [
+                    {
+                      text: "Cancel",
+                      onPress: () => null,
+                      style: "cancel"
+                    },
+                    { text: "YES", onPress: () => BackHandler.exitApp() }
+                  ]);
+                  return true;
+                
+            })
+        }
+        
+    }
  
 const dashBoardList=[
     {
         id:'1',
         name:'Hymns',
-        count:355,
-        backgroundColor:'green',
-        color:'white',
-        icon:'book',
-        iconcolor:'white'
+        subtitle:'From catholic hymn book Nigeria',
+        count:356
     },
     {
         id:'2',
         name:'Prayers',
-        count:12,
-        backgroundColor:'gold',
-        color:'white',
-        icon:'book',
-        iconcolor:'white'
+        subtitle:'Rich collections of prayers',
+        count:12
     },
     {
         id:'3',
         name:'Downloaded Readings',
-        count:readingCount,
-        backgroundColor:'purple',
-        color:'white',
-        icon:'cloud-download',
-        iconcolor:'white'
+        subtitle:'Daily mass readings',
+        count:readingCount
     },
-    // {
-    //     id:'4',
-    //     name:'Reminders Set',
-    //     count:0,
-    //     backgroundColor:'transparent',
-    //     color:'black',
-    //     icon:'alarm',
-    //     iconcolor:'black'
-    // }
-]
+    {
+        id:'4',
+        name:`Rosary Today:`,
+        subtitle:`${day===0?
+            'Glorious Mystery'
+            :day===1?
+            'Joyful Mystery'
+            :day===2?
+            'Sorrowful Mystery'
+            :day===3?
+            'Glorious Mystery'
+            :day===4?
+            'Luminious Mystery'
+            :day===5?
+            'Sorrowful Mystery'
+            :day===6?
+            'Joyful Mystery':''
 
+        }`,
+        count:''
+    }
+ ]
+const onClickMenu=(menuId,value)=>{
+
+    switch(menuId){
+        case 'Hymns':
+         return props.navigation.navigate('hymn')
+        case 'Prayers':
+         return props.navigation.navigate('prayer')
+        case 'Downloaded Readings':
+            if(value>0)
+            {
+            return props.navigation.navigate('DailyReadings',{screen:'Offline Readings'})
+            }
+            return props.navigation.navigate('UserPreferences',{screen:'DownloadReadings'})
+       default:
+            return props.navigation.navigate('prayer',{screen:'RosaryOption'})
+    }
+props.navigation.navigate('')
+}
 function fnDashBoardList(arr)
 {
     return arr;
@@ -109,39 +151,34 @@ function fnDashBoardList(arr)
 
     return (
         <SafeAreaView>
+            <ScrollView>
                  <View>
                  <SliderBox images={Images} 
                     autoplay
                     circleLoop/>
                  </View>
-                <FlatList
-                
-                data={dashBoardList}
-                renderItem={({item})=>(
-                    <SafeAreaView style={{backgroundColor:item.backgroundColor}}>
-                    <View style={{flexDirection:'row'}}> 
-                        <Icon name={item.icon} containerStyle={styles.Icon} color={item.iconcolor}/>
-                        <Text style={styles.Text}>{item.name}</Text>
-                    </View>
-                    <View>
-                        <Text style={{marginLeft:65,fontSize:30,color:item.color}}>{item.count}</Text>
-                    </View>
-                    </SafeAreaView>
-                )}
-                keyExtractor={item=>item.id}
-                ItemSeparatorComponent={()=>{return <Divider style={styles.Divider} />}}
-                ListHeaderComponent={()=>{
-                    return <View 
-                    style={{marginTop:0,alignSelf:'center',marginBottom:0}}>
-                  </View>
-                }}
-
-                ListFooterComponent={()=>{
-                    return <View style={{marginBottom:500}}>
-
-                    </View>
-                }}
-                /> 
+                 
+                <Card title={`Welcome ${user}`}  containerStyle={{borderRadius:30}}>
+                 {
+                     dashBoardList.map((item,id)=>{
+                         return (
+                           <ListItem 
+                           badge={{value:item.count===undefined?'':item.count,textStyle:{color:'white'}}}
+                           bottomDivider
+                           chevron
+                           leftAvatar={{source:require('../../assets/images/catholicImage.png')}}
+                           title={item.name}
+                           subtitle={item.subtitle}
+                           key={id}
+                           onPress={(p)=>{
+                            onClickMenu(item.name,item.count)
+                           }}
+                           /> 
+                         )
+                     })
+                 }
+                </Card>
+                </ScrollView>
         </SafeAreaView>
     )
 }
